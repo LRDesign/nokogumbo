@@ -10,7 +10,13 @@ if have_library('xml2', 'xmlNewDoc')
     select { |name| name.include? 'lib/nokogiri' }.
     sort_by {|name| name[/nokogiri-([\d.]+)/,1].split('.').map(&:to_i)}.last
   if nokogiri_lib
+    require 'pathname'
+    rakehome = ENV['RAKEHOME'] || File.expand_path('../..')
+
     nokogiri_ext = nokogiri_lib.sub(%r(lib/nokogiri(.rb)?$), 'ext/nokogiri')
+    nokogiri_pathname = Pathname.new(nokogiri_ext)
+    rakehome_pathname = Pathname.new(rakehome)
+    nokogiri_ext = nokogiri_pathname.relative_path_from(rakehome_pathname).to_s
 
     # if that doesn't work, try workarounds found in Nokogiri's extconf
     unless find_header('nokogiri.h', nokogiri_ext)
@@ -19,7 +25,7 @@ if have_library('xml2', 'xmlNewDoc')
 
     # if found, enable direct calls to Nokogiri (and libxml2)
     $CFLAGS += ' -DNGLIB' if find_header('nokogiri.h', nokogiri_ext)
-    
+
     if File.exists?("/etc/gentoo-release")
       # link to the library to prevent: nokogumbo.c:(.text+0x26a): undefined reference to `Nokogiri_wrap_xml_document'
       $LDFLAGS += " -L#{nokogiri_ext} -l:nokogiri.so"

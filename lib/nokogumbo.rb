@@ -16,7 +16,7 @@ module Nokogiri
         string = string.read
       end
 
-      # convert to UTF-8 (Ruby 1.9+) 
+      # convert to UTF-8 (Ruby 1.9+)
       if string.respond_to?(:encoding) and string.encoding != Encoding::UTF_8
         string = reencode(string)
       end
@@ -43,7 +43,7 @@ module Nokogiri
 
       # TLS / SSL support
       if uri.scheme == 'https'
-        http.use_ssl = true 
+        http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
 
